@@ -20,3 +20,9 @@ rules:
   semi:
     - error
     - never
+  no-var:
+    - error
+  no-console:
+    - error
+  eqeqeq:
+    - error
