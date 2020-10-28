@@ -1,0 +1,40 @@
+{
+  "name": "discord-satanbot",
+  "version": "1.0.0",
+  "description": "A bot for The 7th Circle discord server",
+  "main": "src/server.js",
+  "repository": "https://github.com/ScreamingHawk/discord-satanbot.git",
+  "author": {
+    "name": "Michael Standen",
+    "email": "michael@standen.link",
+    "url": "https://michael.standen.link"
+  },
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node src/server.js",
+    "lint": "eslint src/**",
+    "lint:fix": "eslint --fix src/** && prettier --write src/**"
+  },
+  "dependencies": {
+    "discord.js": "^12.4.1",
+    "dotenv": "^8.2.0",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.12.1",
+    "eslint-config-prettier": "^6.15.0",
+    "husky": ">=4",
+    "lint-staged": ">=10",
+    "prettier": "^2.1.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
+  }
+}
