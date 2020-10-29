@@ -1,6 +1,14 @@
 require('dotenv').config()
 const log = require('./util/logger')
 const Discord = require('discord.js')
+const { initDatabase } = require('./db/database')
+const {
+	initScores,
+	incrementPoints,
+	addPoints,
+	displayPoints,
+	showLeaderboard,
+} = require('./commands/scores')
 
 // Get token
 const TOKEN = process.env.DISCORD_TOKEN
@@ -11,10 +19,50 @@ if (!TOKEN) {
 	process.exit(1)
 }
 
+// Intialise database
+initDatabase()
+
+const PREFIX = process.env.PREFIX || '#'
+log.info(`Prefix is ${PREFIX}`)
+
 // Spin up bot
 const bot = new Discord.Client()
 bot.on('ready', () => {
 	log.info('Discord login successful!')
-	process.exit(0)
+	initScores(bot)
 })
+
+bot.on('message', message => {
+	// Ignore bots
+	if (message.author.bot) {
+		return
+	}
+	// Ignore DMs
+	if (!message.guild) {
+		return
+	}
+
+	// Increment user points
+	incrementPoints(message)
+
+	// Check for bot command
+	if (message.content.indexOf(PREFIX) !== 0) {
+		return
+	}
+
+	// Get args for handling bot command
+	const args = message.content.slice(PREFIX.length).trim().split(/ +/g)
+	const command = args.shift().toLowerCase()
+
+	if (command === 'score') {
+		return displayPoints(message)
+	}
+	if (command === 'leaderboard') {
+		return showLeaderboard(message)
+	}
+	if (command === 'give') {
+		return addPoints(message, args)
+	}
+})
+
 bot.login(TOKEN)

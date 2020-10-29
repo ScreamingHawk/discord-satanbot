@@ -26,3 +26,6 @@ rules:
     - error
   eqeqeq:
     - error
+  curly:
+    - error
+    - all

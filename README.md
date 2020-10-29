@@ -2,6 +2,10 @@
 
 A bot for The 7th Circle discord server
 
+## Abilities
+
+- Score system
+
 ## Usage
 
 ### Install
