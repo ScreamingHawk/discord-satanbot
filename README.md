@@ -32,6 +32,12 @@ Run the bot
 yarn start
 ```
 
+Alternatively, run the bot in the background
+
+```
+nohup yarn start >> server.log 2>&1 &
+```
+
 ## Credits
 
 [Michael Standen](https://michael.standen.link)
