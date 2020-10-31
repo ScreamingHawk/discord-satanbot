@@ -14,7 +14,8 @@
   "scripts": {
     "start": "node src/server.js",
     "lint": "eslint **.js",
-    "lint:fix": "eslint --fix **.js && prettier --write **.js"
+    "lint:fix": "eslint --fix **.js && prettier --write **.js",
+    "test": "ava"
   },
   "dependencies": {
     "better-sqlite3": "^7.1.1",
@@ -25,6 +26,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "ava": "^3.13.0",
     "eslint": "^7.12.1",
     "eslint-config-prettier": "^6.15.0",
     "husky": ">=4",

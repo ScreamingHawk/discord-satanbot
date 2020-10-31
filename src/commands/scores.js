@@ -10,10 +10,45 @@ const { getMember } = require('../util/discord')
 const POINTS_TIMEOUT_SECONDS = 2 * 60
 const timeouts = {}
 
+const ROLE_THRESHOLDS = [
+	{
+		roleStart: '1st Circle',
+		threshold: 1,
+	},
+	{
+		roleStart: '2nd Circle',
+		threshold: 10,
+	},
+	{
+		roleStart: '3rd Circle',
+		threshold: 100,
+	},
+	{
+		roleStart: '4th Circle',
+		threshold: 1000,
+	},
+	{
+		roleStart: '5th Circle',
+		threshold: 10000,
+	},
+	{
+		roleStart: '6th Circle',
+		threshold: 100000,
+	},
+].sort((a, b) => (a.threshold > b.threshold) ? -1 : 1) // Reverse order
+
 let bot
 
 const initScores = botArg => {
 	bot = botArg
+}
+
+const getScoreRole = score => {
+	const role = ROLE_THRESHOLDS.find(r => score >= r.threshold)
+	if (!role){
+		return null
+	}
+	return role.roleStart
 }
 
 const incrementPoints = message => {
@@ -92,4 +127,5 @@ module.exports = {
 	addPoints,
 	displayPoints,
 	showLeaderboard,
+	getScoreRole,
 }
