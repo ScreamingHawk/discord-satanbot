@@ -9,6 +9,7 @@ const {
 	displayPoints,
 	showLeaderboard,
 } = require('./commands/scores')
+const { initHelp, showHelp } = require('./commands/help')
 
 // Get token
 const TOKEN = process.env.DISCORD_TOKEN
@@ -29,7 +30,9 @@ log.info(`Prefix is ${PREFIX}`)
 const bot = new Discord.Client()
 bot.on('ready', () => {
 	log.info('Discord login successful!')
+	// Initialise commands
 	initScores(bot)
+	initHelp(bot, PREFIX)
 })
 
 bot.on('message', message => {
@@ -54,6 +57,9 @@ bot.on('message', message => {
 	const args = message.content.slice(PREFIX.length).trim().split(/ +/g)
 	const command = args.shift().toLowerCase()
 
+	if (command === 'help') {
+		return showHelp(message, args)
+	}
 	if (command === 'score') {
 		return displayPoints(message)
 	}
