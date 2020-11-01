@@ -71,9 +71,16 @@ const incrementPoints = message => {
 	}
 }
 
-const displayPoints = message => {
+const displayPoints = (message, args) => {
+	const user = message.mentions.users.first() || bot.users.cache.get(args[0])
+	if (user) {
+		// Show requested user's points
+		const score = getScore(user.id)
+		return message.channel.send(`${user.tag} currently has ${score.points} points!`)
+	}
+	// Show author's points
 	const score = getScore(message.author.id)
-	message.reply(`you currently have ${score.points} points!`)
+	return message.reply(`you currently have ${score.points} points!`)
 }
 
 const addPoints = (message, args) => {

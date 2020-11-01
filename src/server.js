@@ -61,7 +61,7 @@ bot.on('message', message => {
 		return showHelp(message, args)
 	}
 	if (command === 'score') {
-		return displayPoints(message)
+		return displayPoints(message, args)
 	}
 	if (command === 'leaderboard') {
 		return showLeaderboard(message)
