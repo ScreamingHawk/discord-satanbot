@@ -3,7 +3,7 @@ const moment = require('moment')
 const Discord = require('discord.js')
 const log = require('../util/logger')
 const { getScore, listScores, setScore } = require('../db/database')
-const { getMember, getRoleStartsWith } = require('../util/discord')
+const { getMember } = require('../util/discord')
 
 // Adapted from https://anidiots.guide/coding-guides/sqlite-based-points-system
 
@@ -14,58 +14,11 @@ let deadServerBonus = false
 const DEAD_SERVER_MINUTES = 15
 let lastMessageTimestamp = moment()
 
-const ROLE_THRESHOLDS = [
-	{
-		roleStart: '1st Circle',
-		threshold: 1,
-	},
-	{
-		roleStart: '2nd Circle',
-		threshold: 10,
-	},
-	{
-		roleStart: '3rd Circle',
-		threshold: 100,
-	},
-	{
-		roleStart: '4th Circle',
-		threshold: 1000,
-	},
-	{
-		roleStart: '5th Circle',
-		threshold: 10000,
-	},
-	{
-		roleStart: '6th Circle',
-		threshold: 100000,
-	},
-].sort((a, b) => (a.threshold > b.threshold ? -1 : 1)) // Reverse order
-
 let bot
 
 const initScores = (botArg, deadServerBonusArg) => {
 	bot = botArg
 	deadServerBonus = deadServerBonusArg || false
-}
-
-// Get the current score role name
-const getScoreRole = points => {
-	const role = ROLE_THRESHOLDS.find(r => points >= r.threshold)
-	if (!role) {
-		return null
-	}
-	return role.roleStart
-}
-
-// Updates the score from the old role to the new
-const updateScoreRoles = (oldPoints, score) => {
-	const oldRole = getScoreRole(oldPoints)
-	const newRole = getScoreRole(score.points)
-	if (oldRole !== newRole) {
-		const member = getMember(score.user)
-		member.roles.add(getRoleStartsWith(newRole), 'Score threshold reached')
-		member.roles.remove(getRoleStartsWith(oldRole), 'Score threshold reached')
-	}
 }
 
 // Calculate bonus points earned
@@ -170,7 +123,5 @@ module.exports = {
 	addPoints,
 	displayPoints,
 	showLeaderboard,
-	getScoreRole,
 	getBonusPoints,
-	updateScoreRoles,
 }
