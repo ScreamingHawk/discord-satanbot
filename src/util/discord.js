@@ -12,6 +12,14 @@ const getMember = async (bot, userId) => {
 	return user
 }
 
+const checkAdmin = message => {
+	if (!message.member.hasPermission('ADMINISTRATOR')) {
+		message.reply('only administators can do this')
+		return false
+	}
+	return true
+}
+
 const getRoleStartsWith = async (bot, roleNameStart) =>
 	(await getGuild(bot)).roles.cache.find(r =>
 		r.name.startsWith(roleNameStart),
@@ -20,5 +28,6 @@ const getRoleStartsWith = async (bot, roleNameStart) =>
 module.exports = {
 	getGuild,
 	getMember,
+	checkAdmin,
 	getRoleStartsWith,
 }

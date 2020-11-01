@@ -9,6 +9,7 @@ const {
 	displayPoints,
 	showLeaderboard,
 } = require('./commands/scores')
+const roles = require('./commands/roles')
 const { initHelp, showHelp } = require('./commands/help')
 
 // Get token
@@ -59,6 +60,9 @@ bot.on('message', message => {
 
 	if (command === 'help') {
 		return showHelp(message, args)
+	}
+	if (command === 'threshold') {
+		return roles.setRoleThreshold(message, args)
 	}
 	if (command === 'score') {
 		return displayPoints(message, args)

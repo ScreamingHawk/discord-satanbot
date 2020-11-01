@@ -3,7 +3,7 @@ const moment = require('moment')
 const Discord = require('discord.js')
 const log = require('../util/logger')
 const { getScore, listScores, setScore } = require('../db/database')
-const { getMember } = require('../util/discord')
+const discordUtil = require('../util/discord')
 
 // Adapted from https://anidiots.guide/coding-guides/sqlite-based-points-system
 
@@ -74,8 +74,8 @@ const displayPoints = (message, args) => {
 
 const addPoints = (message, args) => {
 	// Permission check
-	if (!message.member.hasPermission('ADMINISTRATOR')) {
-		return message.reply('only administators can do this')
+	if (!discordUtil.checkAdmin(message)) {
+		return
 	}
 
 	// Arg check
@@ -85,7 +85,7 @@ const addPoints = (message, args) => {
 	}
 	const pointsToAdd = parseInt(args[1], 10)
 	if (!pointsToAdd) {
-		return message.reply("you didn't tell me how many points to give...")
+		return message.reply('you didn\'t tell me how many points to give...')
 	}
 
 	// Update points
@@ -109,7 +109,7 @@ const showLeaderboard = async message => {
 		.setColor(0xd82929)
 
 	for (const data of top10) {
-		let member = await getMember(bot, data.user)
+		let member = await discordUtil.getMember(bot, data.user)
 		if (member && member.user) {
 			embed.addFields({ name: member.user.tag, value: `${data.points} points` })
 		}
