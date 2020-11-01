@@ -63,10 +63,11 @@ const getBonusPoints = (message, last = lastMessageTimestamp) => {
 		const deadServerMins = now.diff(last, 'minutes') - DEAD_SERVER_MINUTES
 		lastMessageTimestamp = now
 		if (deadServerMins > 0) {
+			const extraPoints = Math.floor(deadServerMins / 5) + 1
 			message.reply(
-				`you earned an extra ${deadServerMins} points for reviving the server!`,
+				`you earned an extra ${extraPoints} points for reviving the server!`,
 			)
-			return deadServerMins
+			return extraPoints
 		}
 	}
 	return 0
@@ -119,7 +120,7 @@ const addPoints = (message, args) => {
 	}
 	const pointsToAdd = parseInt(args[1], 10)
 	if (!pointsToAdd) {
-		return message.reply('you didn\'t tell me how many points to give...')
+		return message.reply("you didn't tell me how many points to give...")
 	}
 
 	// Update points
