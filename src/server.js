@@ -31,7 +31,7 @@ const bot = new Discord.Client()
 bot.on('ready', () => {
 	log.info('Discord login successful!')
 	// Initialise commands
-	initScores(bot)
+	initScores(bot, process.env.DEAD_SERVER_BONUS || false)
 	initHelp(bot, PREFIX)
 })
 
