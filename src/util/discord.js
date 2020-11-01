@@ -12,7 +12,13 @@ const getMember = async (bot, userId) => {
 	return user
 }
 
+const getRoleStartsWith = async (bot, roleNameStart) =>
+	(await getGuild(bot)).roles.cache.find(r =>
+		r.name.startsWith(roleNameStart),
+	) || null
+
 module.exports = {
 	getGuild,
 	getMember,
+	getRoleStartsWith,
 }
