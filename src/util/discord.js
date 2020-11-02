@@ -1,15 +1,30 @@
 const log = require('./logger')
 
-const getGuild = async bot => await bot.guilds.cache.first()
+let guild
+
+const getGuild = async bot => {
+	if (!guild) {
+		guild = await bot.guilds.cache.first()
+	}
+	return guild
+}
 
 const getMember = async (bot, userId) => {
-	const guild = getGuild(bot)
-	let user = guild.members.cache.get(userId)
+	const g = getGuild(bot)
+	let user = g.members.cache.get(userId)
 	if (!user) {
 		log.debug(`Getting member ${userId}`)
-		user = await guild.members.fetch(userId)
+		user = await g.members.fetch(userId)
 	}
 	return user
+}
+
+const checkAdmin = message => {
+	if (!message.member.hasPermission('ADMINISTRATOR')) {
+		message.reply('only administators can do this')
+		return false
+	}
+	return true
 }
 
 const getRoleStartsWith = async (bot, roleNameStart) =>
@@ -20,5 +35,6 @@ const getRoleStartsWith = async (bot, roleNameStart) =>
 module.exports = {
 	getGuild,
 	getMember,
+	checkAdmin,
 	getRoleStartsWith,
 }

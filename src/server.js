@@ -9,6 +9,7 @@ const {
 	displayPoints,
 	showLeaderboard,
 } = require('./commands/scores')
+const roles = require('./commands/roles')
 const { initHelp, showHelp } = require('./commands/help')
 
 // Get token
@@ -32,7 +33,9 @@ bot.on('ready', () => {
 	log.info('Discord login successful!')
 	// Initialise commands
 	initScores(bot, process.env.DEAD_SERVER_BONUS || false)
+	roles.initRoles(bot)
 	initHelp(bot, PREFIX)
+	log.info('Commands initialised')
 })
 
 bot.on('message', message => {
@@ -57,8 +60,13 @@ bot.on('message', message => {
 	const args = message.content.slice(PREFIX.length).trim().split(/ +/g)
 	const command = args.shift().toLowerCase()
 
+	//if (message.author.username !== "MilkyTaste") return
+
 	if (command === 'help') {
 		return showHelp(message, args)
+	}
+	if (command === 'threshold') {
+		return roles.setRoleThreshold(message, args)
 	}
 	if (command === 'score') {
 		return displayPoints(message, args)

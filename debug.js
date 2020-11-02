@@ -9,7 +9,10 @@ database.initDatabase()
 
 const TOKEN = process.env.DISCORD_TOKEN
 const bot = new Discord.Client()
+let g
+
 bot.on('ready', () => {
 	log.info('Discord login successful!')
+	g = bot.guilds.cache.first()
 })
 bot.login(TOKEN)

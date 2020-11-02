@@ -3,7 +3,8 @@ const moment = require('moment')
 const Discord = require('discord.js')
 const log = require('../util/logger')
 const { getScore, listScores, setScore } = require('../db/database')
-const { getMember } = require('../util/discord')
+const roles = require('./roles')
+const discordUtil = require('../util/discord')
 
 // Adapted from https://anidiots.guide/coding-guides/sqlite-based-points-system
 
@@ -14,46 +15,11 @@ let deadServerBonus = false
 const DEAD_SERVER_MINUTES = 15
 let lastMessageTimestamp = moment()
 
-const ROLE_THRESHOLDS = [
-	{
-		roleStart: '1st Circle',
-		threshold: 1,
-	},
-	{
-		roleStart: '2nd Circle',
-		threshold: 10,
-	},
-	{
-		roleStart: '3rd Circle',
-		threshold: 100,
-	},
-	{
-		roleStart: '4th Circle',
-		threshold: 1000,
-	},
-	{
-		roleStart: '5th Circle',
-		threshold: 10000,
-	},
-	{
-		roleStart: '6th Circle',
-		threshold: 100000,
-	},
-].sort((a, b) => (a.threshold > b.threshold ? -1 : 1)) // Reverse order
-
 let bot
 
 const initScores = (botArg, deadServerBonusArg) => {
 	bot = botArg
 	deadServerBonus = deadServerBonusArg || false
-}
-
-const getScoreRole = score => {
-	const role = ROLE_THRESHOLDS.find(r => score >= r.threshold)
-	if (!role) {
-		return null
-	}
-	return role.roleStart
 }
 
 // Calculate bonus points earned
@@ -84,6 +50,7 @@ const incrementPoints = message => {
 		const score = getScore(author.id)
 		score.points += random.int(1, 3) + getBonusPoints(message)
 		setScore(score)
+		roles.updateScoreRoles(message, score)
 		log.debug(`User ${author.username} has ${score.points} points`)
 
 		// Update expiry
@@ -109,8 +76,8 @@ const displayPoints = (message, args) => {
 
 const addPoints = (message, args) => {
 	// Permission check
-	if (!message.member.hasPermission('ADMINISTRATOR')) {
-		return message.reply('only administators can do this')
+	if (!discordUtil.checkAdmin(message)) {
+		return
 	}
 
 	// Arg check
@@ -127,10 +94,11 @@ const addPoints = (message, args) => {
 	const score = getScore(user.id)
 	score.points += pointsToAdd
 	setScore(score)
+	roles.updateScoreRoles(message, score)
 
-	return message.channel.send(
-		`${user.tag} has received ${pointsToAdd} points and now stands at ${score.points} points.`,
-	)
+	const msg = `${user.tag} has received ${pointsToAdd} points and now stands at ${score.points} points.`
+	log.debug(msg)
+	return message.channel.send(msg)
 }
 
 const showLeaderboard = async message => {
@@ -144,7 +112,7 @@ const showLeaderboard = async message => {
 		.setColor(0xd82929)
 
 	for (const data of top10) {
-		let member = await getMember(bot, data.user)
+		let member = await discordUtil.getMember(bot, data.user)
 		if (member && member.user) {
 			embed.addFields({ name: member.user.tag, value: `${data.points} points` })
 		}
@@ -158,6 +126,5 @@ module.exports = {
 	addPoints,
 	displayPoints,
 	showLeaderboard,
-	getScoreRole,
 	getBonusPoints,
 }
