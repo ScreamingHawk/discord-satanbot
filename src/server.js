@@ -24,16 +24,23 @@ if (!TOKEN) {
 // Intialise database
 initDatabase()
 
+// Prepare env vars
 const PREFIX = process.env.PREFIX || '#'
 log.info(`Prefix is ${PREFIX}`)
+const DEAD_SERVER_BONUS = process.env.DEAD_SERVER_BONUS || false
+log.info(`Dead server bonus is ${DEAD_SERVER_BONUS ? 'enabled' : 'disabled'}`)
+const TEST_USER = process.env.TEST_USER || null
+if (TEST_USER) {
+	log.warn(`Running with access only for ${TEST_USER}`)
+}
 
 // Spin up bot
 const bot = new Discord.Client()
 bot.on('ready', () => {
 	log.info('Discord login successful!')
 	// Initialise commands
-	initScores(bot, process.env.DEAD_SERVER_BONUS || false)
-	roles.initRoles(bot)
+	initScores(bot, DEAD_SERVER_BONUS)
+	roles.initRoles(bot, TEST_USER)
 	initHelp(bot, PREFIX)
 	log.info('Commands initialised')
 })
@@ -60,7 +67,10 @@ bot.on('message', message => {
 	const args = message.content.slice(PREFIX.length).trim().split(/ +/g)
 	const command = args.shift().toLowerCase()
 
-	//if (message.author.username !== "MilkyTaste") return
+	// Ignore if running in test user mode and isn't test user
+	if (TEST_USER && message.author.username !== TEST_USER) {
+		return
+	}
 
 	if (command === 'help') {
 		return showHelp(message, args)

@@ -38,6 +38,17 @@ Alternatively, run the bot in the background
 nohup yarn start >> server.log 2>&1 &
 ```
 
+### Test
+
+Run the unit tests with
+
+```
+yarn test
+```
+
+You can also run the bot having it only respond to a single user.
+Edit the `.env` file and include a parameter `TEST_USER=<username>` where `<username>` is the username that the bot will listen to. Then run the bot with `yarn start`
+
 ## Credits
 
 [Michael Standen](https://michael.standen.link)

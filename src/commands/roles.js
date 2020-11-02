@@ -2,10 +2,11 @@ const discord = require('../util/discord')
 const data = require('../db/data')
 const log = require('../util/logger')
 
-let bot
+let bot, testUser
 
-const initRoles = botArg => {
+const initRoles = (botArg, testUserArg) => {
 	bot = botArg
+	testUser = testUserArg
 }
 
 // Get the current score role
@@ -19,6 +20,7 @@ const getScoreRole = points => {
 
 // Updates the score from the old role to the new
 const updateScoreRoles = async (message, score) => {
+	if (testUser) {return} // Ignore this when test user mode active
 	const { member } = message
 	const newRole = getScoreRole(score.points)
 	if (newRole && !member.roles.cache.get(newRole)) {
