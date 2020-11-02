@@ -3,6 +3,7 @@ const moment = require('moment')
 const Discord = require('discord.js')
 const log = require('../util/logger')
 const { getScore, listScores, setScore } = require('../db/database')
+const roles = require('./roles')
 const discordUtil = require('../util/discord')
 
 // Adapted from https://anidiots.guide/coding-guides/sqlite-based-points-system
@@ -49,6 +50,7 @@ const incrementPoints = message => {
 		const score = getScore(author.id)
 		score.points += random.int(1, 3) + getBonusPoints(message)
 		setScore(score)
+		roles.updateScoreRoles(message, score)
 		log.debug(`User ${author.username} has ${score.points} points`)
 
 		// Update expiry
@@ -85,17 +87,18 @@ const addPoints = (message, args) => {
 	}
 	const pointsToAdd = parseInt(args[1], 10)
 	if (!pointsToAdd) {
-		return message.reply('you didn\'t tell me how many points to give...')
+		return message.reply("you didn't tell me how many points to give...")
 	}
 
 	// Update points
 	const score = getScore(user.id)
 	score.points += pointsToAdd
 	setScore(score)
+	roles.updateScoreRoles(message, score)
 
-	return message.channel.send(
-		`${user.tag} has received ${pointsToAdd} points and now stands at ${score.points} points.`,
-	)
+	const msg = `${user.tag} has received ${pointsToAdd} points and now stands at ${score.points} points.`
+	log.debug(msg)
+	return message.channel.send(msg)
 }
 
 const showLeaderboard = async message => {

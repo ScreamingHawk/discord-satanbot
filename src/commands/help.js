@@ -4,6 +4,7 @@ const HELP_SIMPLE = {
 	score: 'Display your current points',
 	give: 'Admin command to modify points',
 	leaderboard: 'Show the top 10 points leaders',
+	threshold: 'Set up the autoroles gained through points',
 }
 
 let bot, prefix, HELP_COMPLETE
@@ -15,6 +16,7 @@ const initHelp = (botArg, prefixArg) => {
 		score: `\`${prefix}score\`\nDisplay your current points`,
 		give: `\`${prefix}give @user 10\`\nAdmin command to modify points.\nCan give negative points to subtract`,
 		leaderboard: `\`${prefix}leaderboard\`\nShow the top 10 points leaders`,
+		threshold: `\`${prefix}threshold role_name 10\`\nSet the role provided to be awards at 10 points\nThis command is only available to admins`,
 	}
 }
 

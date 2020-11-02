@@ -1,6 +1,6 @@
 const database = require('./database')
 
-let roleThresholds = []
+let roleThresholds
 
 const initData = () => {
 	roleThresholds = database
@@ -8,7 +8,12 @@ const initData = () => {
 		.sort((a, b) => (a.threshold > b.threshold ? -1 : 1)) // Reverse order
 }
 
-const getRoleThresholds = () => roleThresholds
+const getRoleThresholds = () => {
+	if (!roleThresholds) {
+		initData()
+	}
+	return roleThresholds
+}
 
 const updateRoleThreshold = threshold => {
 	database.setRoleThreshold(threshold)
