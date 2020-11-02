@@ -10,7 +10,7 @@ const getGuild = async bot => {
 }
 
 const getMember = async (bot, userId) => {
-	const g = getGuild(bot)
+	const g = await getGuild(bot)
 	let user = g.members.cache.get(userId)
 	if (!user) {
 		log.debug(`Getting member ${userId}`)
