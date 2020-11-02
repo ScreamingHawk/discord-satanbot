@@ -1,13 +1,20 @@
 const log = require('./logger')
 
-const getGuild = async bot => await bot.guilds.cache.first()
+let guild
+
+const getGuild = async bot => {
+	if (!guild) {
+		guild = await bot.guilds.cache.first()
+	}
+	return guild
+}
 
 const getMember = async (bot, userId) => {
-	const guild = getGuild(bot)
-	let user = guild.members.cache.get(userId)
+	const g = getGuild(bot)
+	let user = g.members.cache.get(userId)
 	if (!user) {
 		log.debug(`Getting member ${userId}`)
-		user = await guild.members.fetch(userId)
+		user = await g.members.fetch(userId)
 	}
 	return user
 }

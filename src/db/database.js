@@ -32,7 +32,11 @@ const initDatabase = () => {
 				'CREATE TABLE role_thresholds (role TEXT PRIMARY KEY, threshold INTEGER);',
 			)
 			.run()
-		sql.prepare('CREATE UNIQUE INDEX idx_scores_id ON scores (role);').run()
+		sql
+			.prepare(
+				'CREATE UNIQUE INDEX idx_role_threshold_id ON role_thresholds (role);',
+			)
+			.run()
 	}
 }
 
@@ -66,12 +70,12 @@ const setScore = score => {
 const listRoleThresholds = () =>
 	sql.prepare('SELECT * FROM role_thresholds ORDER BY threshold DESC;').all()
 
-const setRoleThreshold = score => {
+const setRoleThreshold = threshold => {
 	sql
 		.prepare(
-			'INSERT OR REPLACE INTO role_threshold (role, threshold) VALUES (@role, @threshold);',
+			'INSERT OR REPLACE INTO role_thresholds (role, threshold) VALUES (@role, @threshold);',
 		)
-		.run(score)
+		.run(threshold)
 }
 
 module.exports = {
