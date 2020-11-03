@@ -17,6 +17,11 @@ const initHelp = (botArg, prefixArg) => {
 			short: 'Modify someone\'s points',
 			detailed: `\`${prefix}give @user 10\`\nAdmin command to modify points.\nCan give negative points to subtract`,
 		},
+		ignore: {
+			admin: true,
+			short: 'Toggle ignoring this channel for points',
+			detailed: `\`${prefix}ignore\`\nPrevents this channel from scoring points.\nRun the command again to reenable scoring in this channel`,
+		},
 		leaderboard: {
 			admin: false,
 			short: 'Show the top 10 points leaders',

@@ -38,6 +38,21 @@ const initDatabase = () => {
 			)
 			.run()
 	}
+	// Score Ignore table
+	table = sql
+		.prepare(
+			'SELECT count(*) FROM sqlite_master WHERE type = \'table\' AND name = \'score_ignore\';',
+		)
+		.get()
+	if (!table['count(*)']) {
+		log.info('Creating score ignore table')
+		sql.prepare('CREATE TABLE score_ignore (channel TEXT PRIMARY KEY);').run()
+		sql
+			.prepare(
+				'CREATE UNIQUE INDEX idx_score_ignore_id ON score_ignore (channel);',
+			)
+			.run()
+	}
 }
 
 const getScore = userId => {
@@ -78,6 +93,19 @@ const setRoleThreshold = threshold => {
 		.run(threshold)
 }
 
+// Score ignore
+
+const listScoreIgnore = () => sql.prepare('SELECT * FROM score_ignore;').all()
+
+const addScoreIgnore = ignore => {
+	sql
+		.prepare('INSERT OR REPLACE INTO score_ignore (channel) VALUES (@channel);')
+		.run(ignore)
+}
+const removeScoreIgnore = ignore => {
+	sql.prepare('DELETE FROM score_ignore where channel = @channel;').run(ignore)
+}
+
 module.exports = {
 	initDatabase,
 	getScore,
@@ -85,4 +113,7 @@ module.exports = {
 	setScore,
 	listRoleThresholds,
 	setRoleThreshold,
+	listScoreIgnore,
+	addScoreIgnore,
+	removeScoreIgnore,
 }

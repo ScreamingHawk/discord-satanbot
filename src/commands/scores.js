@@ -2,7 +2,7 @@ const random = require('random')
 const moment = require('moment')
 const Discord = require('discord.js')
 const log = require('../util/logger')
-const { getScore, listScores, setScore } = require('../db/database')
+const database = require('../db/database')
 const roles = require('./roles')
 const discordUtil = require('../util/discord')
 
@@ -15,11 +15,32 @@ let deadServerBonus = false
 const DEAD_SERVER_MINUTES = 15
 let lastMessageTimestamp = moment()
 
+let ignoreChannels = []
+
 let bot
 
 const initScores = (botArg, deadServerBonusArg) => {
 	bot = botArg
 	deadServerBonus = deadServerBonusArg || false
+	ignoreChannels = database.listScoreIgnore()
+}
+
+// Check if channel should be ignored
+const checkIgnoreChannel = channel =>
+	!!ignoreChannels.find(c => c.channel === channel)
+
+const toggleIgnoreChannel = message => {
+	if (!discordUtil.checkAdmin(message)) {
+		return
+	}
+	if (checkIgnoreChannel(message.channel.id)) {
+		database.removeScoreIgnore({ channel: message.channel.id })
+		message.reply('this channel is no longer ignored from scoring')
+	} else {
+		database.addScoreIgnore({ channel: message.channel.id })
+		message.reply('this channel is now ignored from scoring')
+	}
+	ignoreChannels = database.listScoreIgnore()
 }
 
 // Calculate bonus points earned
@@ -40,6 +61,10 @@ const getBonusPoints = (message, last = lastMessageTimestamp) => {
 }
 
 const incrementPoints = message => {
+	if (checkIgnoreChannel(message.channel.id)) {
+		return
+	}
+
 	const { author } = message
 
 	// Check user timeout expired
@@ -47,9 +72,9 @@ const incrementPoints = message => {
 	const ts = moment(message.createdAt)
 	if (!timeout || ts.diff(timeout.last, 'seconds') > POINTS_TIMEOUT_SECONDS) {
 		// Award points
-		const score = getScore(author.id)
+		const score = database.getScore(author.id)
 		score.points += random.int(1, 3) + getBonusPoints(message)
-		setScore(score)
+		database.setScore(score)
 		roles.updateScoreRoles(message, score)
 		log.debug(`User ${author.username} has ${score.points} points`)
 
@@ -64,13 +89,13 @@ const displayPoints = (message, args) => {
 	const user = message.mentions.users.first() || bot.users.cache.get(args[0])
 	if (user) {
 		// Show requested user's points
-		const score = getScore(user.id)
+		const score = database.getScore(user.id)
 		return message.channel.send(
 			`${user.tag} currently has ${score.points} points!`,
 		)
 	}
 	// Show author's points
-	const score = getScore(message.author.id)
+	const score = database.getScore(message.author.id)
 	return message.reply(`you currently have ${score.points} points!`)
 }
 
@@ -91,9 +116,9 @@ const addPoints = (message, args) => {
 	}
 
 	// Update points
-	const score = getScore(user.id)
+	const score = database.getScore(user.id)
 	score.points += pointsToAdd
-	setScore(score)
+	database.setScore(score)
 	roles.updateScoreRoles(message, score)
 
 	const msg = `${user.tag} has received ${pointsToAdd} points and now stands at ${score.points} points.`
@@ -102,7 +127,7 @@ const addPoints = (message, args) => {
 }
 
 const showLeaderboard = async message => {
-	const top10 = listScores(10)
+	const top10 = database.listScores(10)
 
 	// Now shake it and show it! (as a nice embed, too!)
 	const embed = new Discord.MessageEmbed()
@@ -127,4 +152,5 @@ module.exports = {
 	displayPoints,
 	showLeaderboard,
 	getBonusPoints,
+	toggleIgnoreChannel,
 }

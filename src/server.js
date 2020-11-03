@@ -2,15 +2,9 @@ require('dotenv').config()
 const log = require('./util/logger')
 const Discord = require('discord.js')
 const { initDatabase } = require('./db/database')
-const {
-	initScores,
-	incrementPoints,
-	addPoints,
-	displayPoints,
-	showLeaderboard,
-} = require('./commands/scores')
+const scores = require('./commands/scores')
 const roles = require('./commands/roles')
-const { initHelp, showHelp } = require('./commands/help')
+const help = require('./commands/help')
 
 // Get token
 const TOKEN = process.env.DISCORD_TOKEN
@@ -39,9 +33,9 @@ const bot = new Discord.Client()
 bot.on('ready', () => {
 	log.info('Discord login successful!')
 	// Initialise commands
-	initScores(bot, DEAD_SERVER_BONUS)
+	scores.initScores(bot, DEAD_SERVER_BONUS)
 	roles.initRoles(bot, TEST_USER)
-	initHelp(bot, PREFIX)
+	help.initHelp(bot, PREFIX)
 	log.info('Commands initialised')
 })
 
@@ -56,7 +50,7 @@ bot.on('message', message => {
 	}
 
 	// Increment user points
-	incrementPoints(message)
+	scores.incrementPoints(message)
 
 	// Check for bot command
 	if (message.content.indexOf(PREFIX) !== 0) {
@@ -73,19 +67,22 @@ bot.on('message', message => {
 	}
 
 	if (command === 'help') {
-		return showHelp(message, args)
+		return help.showHelp(message, args)
 	}
 	if (command === 'threshold') {
 		return roles.setRoleThreshold(message, args)
 	}
 	if (command === 'score') {
-		return displayPoints(message, args)
+		return scores.displayPoints(message, args)
+	}
+	if (command === 'ignore') {
+		return scores.toggleIgnoreChannel(message)
 	}
 	if (command === 'leaderboard') {
-		return showLeaderboard(message)
+		return scores.showLeaderboard(message)
 	}
 	if (command === 'give') {
-		return addPoints(message, args)
+		return scores.addPoints(message, args)
 	}
 })
 
