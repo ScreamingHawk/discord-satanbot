@@ -112,7 +112,7 @@ const addPoints = (message, args) => {
 	}
 	const pointsToAdd = parseInt(args[1], 10)
 	if (!pointsToAdd) {
-		return message.reply("you didn't tell me how many points to give...")
+		return message.reply('you didn\'t tell me how many points to give...')
 	}
 
 	// Update points
@@ -136,10 +136,10 @@ const showLeaderboard = async message => {
 		.setDescription('Our top 10 points leaders!')
 		.setColor(0xd82929)
 
-	for (const data of top10) {
+	for (const [index, data] of top10.entries()) {
 		let member = await discordUtil.getMember(bot, data.user)
 		if (member && member.user) {
-			embed.addFields({ name: member.user.tag, value: `${data.points} points` })
+			embed.addFields({ name: `${index + 1}: ${member.user.tag}`, value: `${data.points} points` })
 		}
 	}
 	return message.channel.send({ embed })
