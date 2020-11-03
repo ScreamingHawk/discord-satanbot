@@ -1,5 +1,6 @@
 const discord = require('../util/discord')
 const data = require('../db/data')
+const database = require('../db/database')
 const log = require('../util/logger')
 
 let bot, testUser
@@ -20,7 +21,9 @@ const getScoreRole = points => {
 
 // Updates the score from the old role to the new
 const updateScoreRoles = async (message, score) => {
-	if (testUser) {return} // Ignore this when test user mode active
+	if (testUser) {
+		return
+	} // Ignore this when test user mode active
 	const { member } = message
 	const newRole = getScoreRole(score.points)
 	if (newRole && !member.roles.cache.get(newRole)) {
@@ -63,9 +66,60 @@ const setRoleThreshold = async (message, args) => {
 	message.reply(msg)
 }
 
+// Self assign roles
+
+const selfAssignable = async (message, args) => {
+	if (!discord.checkAdmin(message)) {return}
+	const role = args[0] ? await discord.getRoleStartsWith(bot, args[0]) : null
+	if (!role) {
+		return message.reply('cannot find role')
+	}
+
+	const selfAssign = {
+		role: role.id,
+	}
+
+	log.info(
+		`${message.author.username} toggled role ${role.name} as self assignable`,
+	)
+	if (database.isSelfAssign(selfAssign)) {
+		// Remove self assign
+		database.removeSelfAssign(selfAssign)
+		return message.reply(`role "${role.name}" is no longer self assignable`)
+	} else {
+		// Add self assign
+		database.addSelfAssign(selfAssign)
+		return message.reply(`role "${role.name}" is now self assignable`)
+	}
+}
+
+const selfAssign = async (message, args) => {
+	const role = args[0] ? await discord.getRoleStartsWith(bot, args[0]) : null
+	if (!role) {
+		return message.reply('cannot find role')
+	}
+	if (!database.isSelfAssign({ role: role.id })) {
+		return message.reply(`role "${role.name}" is not self assignable`)
+	}
+
+	const { member } = message
+	log.info(`${message.author.username} toggled role ${role.name}`)
+	if (member.roles.cache.find(r => r.id === role.id)) {
+		// Remove role
+		await member.roles.remove(role, 'Self assigned')
+		message.reply(`role "${role.name}" removed`)
+	} else {
+		// Add role
+		await member.roles.add(role, 'Self assigned')
+		message.reply(`role "${role.name}" added`)
+	}
+}
+
 module.exports = {
 	initRoles,
 	getScoreRole,
 	updateScoreRoles,
 	setRoleThreshold,
+	selfAssign,
+	selfAssignable,
 }

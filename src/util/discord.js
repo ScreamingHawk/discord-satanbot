@@ -29,7 +29,7 @@ const checkAdmin = message => {
 
 const getRoleStartsWith = async (bot, roleNameStart) =>
 	(await getGuild(bot)).roles.cache.find(r =>
-		r.name.startsWith(roleNameStart),
+		r.name.toLowerCase().startsWith(roleNameStart.toLowerCase()),
 	) || null
 
 module.exports = {

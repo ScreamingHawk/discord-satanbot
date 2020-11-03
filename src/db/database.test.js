@@ -5,7 +5,7 @@ test.before(() => {
 	database.initDatabase()
 })
 
-test('score ignore database works', t => {
+test('score ignore table works', t => {
 	const ignore = {
 		channel: '123',
 	}
@@ -26,4 +26,20 @@ test('score ignore database works', t => {
 
 	// Confirm removed
 	t.deepEqual(startList, newList)
+})
+
+test('self assign table works', t => {
+	const selfAssign = {
+		role: '123',
+	}
+	database.removeSelfAssign(selfAssign) // Remove potential held over entry
+	t.false(database.isSelfAssign(selfAssign))
+
+	// Add an entry
+	database.addSelfAssign(selfAssign)
+	t.true(database.isSelfAssign(selfAssign))
+
+	// Remove
+	database.removeSelfAssign(selfAssign)
+	t.false(database.isSelfAssign(selfAssign))
 })

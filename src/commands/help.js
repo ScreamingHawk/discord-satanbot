@@ -7,6 +7,7 @@ const initHelp = (botArg, prefixArg) => {
 	bot = botArg
 	prefix = prefixArg
 	HELP_DETAILS = {
+		// Scores
 		score: {
 			admin: false,
 			short: 'Display your current points',
@@ -32,6 +33,17 @@ const initHelp = (botArg, prefixArg) => {
 			short: 'Set up the autoroles gained through points',
 			detailed: `\`${prefix}threshold role_name 10\`\nSet the role provided to be awards at 10 points\nThis command is only available to admins`,
 		},
+		// Roles
+		assign: {
+			admin: false,
+			short: 'Self assign roles',
+			detailed: `\`${prefix}assign role_name\`\nAdds a role to the user if the role is self assignable\nRun this command again to remove the role`,
+		},
+		assignable: {
+			admin: true,
+			short: 'Enable self assigning for roles',
+			detailed: `\`${prefix}assignable role_name\`\nSets the role to be self assignable using the \`${prefix}assign\` command\nRun this command again to remove self assignability`,
+		},
 	}
 }
 
@@ -54,7 +66,7 @@ const showHelp = async (message, args) => {
 			)
 		}
 		embed.setDescription(`Here's some more info about ${helpCommand}`)
-		embed.addFields({ name: helpCommand, value: helpDetail.details })
+		embed.addFields({ name: helpCommand, value: helpDetail.detailed })
 	} else {
 		// Complete help
 		embed.setDescription(

@@ -69,6 +69,7 @@ bot.on('message', message => {
 	if (command === 'help') {
 		return help.showHelp(message, args)
 	}
+	// Scores
 	if (command === 'threshold') {
 		return roles.setRoleThreshold(message, args)
 	}
@@ -83,6 +84,13 @@ bot.on('message', message => {
 	}
 	if (command === 'give') {
 		return scores.addPoints(message, args)
+	}
+	// Roles
+	if (command === 'assign') {
+		return roles.selfAssign(message, args)
+	}
+	if (command === 'assignable') {
+		return roles.selfAssignable(message, args)
 	}
 })
 

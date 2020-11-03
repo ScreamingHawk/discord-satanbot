@@ -53,6 +53,19 @@ const initDatabase = () => {
 			)
 			.run()
 	}
+	// Self Assign table
+	table = sql
+		.prepare(
+			'SELECT count(*) FROM sqlite_master WHERE type = \'table\' AND name = \'self_assign\';',
+		)
+		.get()
+	if (!table['count(*)']) {
+		log.info('Creating self assign roles table')
+		sql.prepare('CREATE TABLE self_assign (role TEXT PRIMARY KEY);').run()
+		sql
+			.prepare('CREATE UNIQUE INDEX idx_self_assign_id ON self_assign (role);')
+			.run()
+	}
 }
 
 const getScore = userId => {
@@ -106,6 +119,22 @@ const removeScoreIgnore = ignore => {
 	sql.prepare('DELETE FROM score_ignore where channel = @channel;').run(ignore)
 }
 
+// Self assignable roles
+
+const isSelfAssign = role =>
+	!!sql
+		.prepare('SELECT * FROM self_assign WHERE role = @role LIMIT 1;')
+		.get(role)
+
+const addSelfAssign = selfAssign => {
+	sql
+		.prepare('INSERT OR REPLACE INTO self_assign (role) VALUES (@role);')
+		.run(selfAssign)
+}
+const removeSelfAssign = selfAssign => {
+	sql.prepare('DELETE FROM self_assign where role = @role;').run(selfAssign)
+}
+
 module.exports = {
 	initDatabase,
 	getScore,
@@ -116,4 +145,7 @@ module.exports = {
 	listScoreIgnore,
 	addScoreIgnore,
 	removeScoreIgnore,
+	isSelfAssign,
+	addSelfAssign,
+	removeSelfAssign,
 }
