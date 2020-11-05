@@ -69,7 +69,9 @@ const setRoleThreshold = async (message, args) => {
 // Self assign roles
 
 const selfAssignable = async (message, args) => {
-	if (!discord.checkAdmin(message)) {return}
+	if (!discord.checkAdmin(message)) {
+		return
+	}
 	const role = args[0] ? await discord.getRoleStartsWith(bot, args[0]) : null
 	if (!role) {
 		return message.reply('cannot find role')
@@ -94,7 +96,15 @@ const selfAssignable = async (message, args) => {
 }
 
 const selfAssign = async (message, args) => {
-	const role = args[0] ? await discord.getRoleStartsWith(bot, args[0]) : null
+	if (!args[0]) {
+		// Show all self assignable roles
+		const roleIds = database.listSelfAssign().map(r => r.role)
+		const roles = (await discord.getGuild(bot)).roles.cache
+			.filter(r => roleIds.indexOf(r.id) > -1)
+			.map(r => r.name)
+		return message.reply(`self assignable roles:\n${roles.join('\n')}`)
+	}
+	const role = await discord.getRoleStartsWith(bot, args[0])
 	if (!role) {
 		return message.reply('cannot find role')
 	}

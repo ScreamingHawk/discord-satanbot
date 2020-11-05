@@ -121,6 +121,8 @@ const removeScoreIgnore = ignore => {
 
 // Self assignable roles
 
+const listSelfAssign = () => sql.prepare('SELECT * from self_assign;').all()
+
 const isSelfAssign = role =>
 	!!sql
 		.prepare('SELECT * FROM self_assign WHERE role = @role LIMIT 1;')
@@ -145,6 +147,7 @@ module.exports = {
 	listScoreIgnore,
 	addScoreIgnore,
 	removeScoreIgnore,
+	listSelfAssign,
 	isSelfAssign,
 	addSelfAssign,
 	removeSelfAssign,

@@ -37,7 +37,7 @@ const initHelp = (botArg, prefixArg) => {
 		assign: {
 			admin: false,
 			short: 'Self assign roles',
-			detailed: `\`${prefix}assign role_name\`\nAdds a role to the user if the role is self assignable\nRun this command again to remove the role`,
+			detailed: `\`${prefix}assign role_name\`\nAdds a role to the user if the role is self assignable\nRun this command again to remove the role\nRun \`${prefix}assign\` to list all the available roles`,
 		},
 		assignable: {
 			admin: true,
