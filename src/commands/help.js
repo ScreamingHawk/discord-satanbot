@@ -11,7 +11,14 @@ const initHelp = (botArg, prefixArg) => {
 		score: {
 			admin: false,
 			short: 'Display your current points',
-			detailed: `\`${prefix}score\`\nDisplay your current points`,
+			detailed: [
+				`\`${prefix}score\``,
+				'Display your current points.',
+				'You gain 1-3 points each time you post, with a 2 minute cooldown.',
+				'Bonus points are earned if you post after the server has had a period of inactivity.',
+				'Earning points will grant you higher roles and more powers.',
+				'When you earn enough points you can `prestige` and gain a vanity role.',
+			].join('\n'),
 		},
 		give: {
 			admin: true,
