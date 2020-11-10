@@ -12,7 +12,8 @@ const POINTS_TIMEOUT_SECONDS = 2 * 60
 const timeouts = {}
 
 let deadServerBonus = false
-const DEAD_SERVER_MINUTES = 15
+const DEAD_SERVER_MINUTES = 45
+const DEAD_SERVER_PMINS_PER_POINT = 2
 let lastMessageTimestamp = moment()
 
 let ignoreChannels = []
@@ -50,7 +51,8 @@ const getBonusPoints = (message, last = lastMessageTimestamp) => {
 		const deadServerMins = now.diff(last, 'minutes') - DEAD_SERVER_MINUTES
 		lastMessageTimestamp = now
 		if (deadServerMins > 0) {
-			const extraPoints = Math.floor(deadServerMins / 5) + 1
+			const extraPoints =
+				Math.floor(deadServerMins / DEAD_SERVER_PMINS_PER_POINT) + 1
 			message.reply(
 				`you earned an extra ${extraPoints} points for reviving the server!`,
 			)
@@ -139,7 +141,10 @@ const showLeaderboard = async message => {
 	for (const [index, data] of top10.entries()) {
 		let member = await discordUtil.getMember(bot, data.user)
 		if (member && member.user) {
-			embed.addFields({ name: `${index + 1}: ${member.user.tag}`, value: `${data.points} points` })
+			embed.addFields({
+				name: `${index + 1}: ${member.user.tag}`,
+				value: `${data.points} points`,
+			})
 		}
 	}
 	return message.channel.send({ embed })
@@ -153,4 +158,6 @@ module.exports = {
 	showLeaderboard,
 	getBonusPoints,
 	toggleIgnoreChannel,
+	DEAD_SERVER_MINUTES,
+	DEAD_SERVER_PMINS_PER_POINT,
 }
