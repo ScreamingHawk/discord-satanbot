@@ -145,6 +145,11 @@ const showLeaderboard = async message => {
 				name: `${index + 1}: ${member.user.tag}`,
 				value: `${data.points} points`,
 			})
+		} else {
+			embed.addFields({
+				name: `${index + 1}: Unknown Member`,
+				value: `${data.points} points`,
+			})
 		}
 	}
 	return message.channel.send({ embed })

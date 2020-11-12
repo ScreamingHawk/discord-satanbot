@@ -14,7 +14,9 @@ const getMember = async (bot, userId) => {
 	let user = g.members.cache.get(userId)
 	if (!user) {
 		log.debug(`Getting member ${userId}`)
-		user = await g.members.fetch(userId)
+		user = await g.members
+			.fetch(userId)
+			.catch(e => log.error(`Error getting member: ${e}`))
 	}
 	return user
 }
