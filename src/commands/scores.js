@@ -114,7 +114,7 @@ const addPoints = (message, args) => {
 	}
 	const pointsToAdd = parseInt(args[1], 10)
 	if (!pointsToAdd) {
-		return message.reply('you didn\'t tell me how many points to give...')
+		return message.reply("you didn't tell me how many points to give...")
 	}
 
 	// Update points
@@ -129,7 +129,8 @@ const addPoints = (message, args) => {
 }
 
 const showLeaderboard = async message => {
-	const top10 = database.listScores(10)
+	// Get a couple extra in case people have left
+	const top10 = database.listScores(15)
 
 	// Now shake it and show it! (as a nice embed, too!)
 	const embed = new Discord.MessageEmbed()
@@ -138,18 +139,19 @@ const showLeaderboard = async message => {
 		.setDescription('Our top 10 points leaders!')
 		.setColor(0xd82929)
 
-	for (const [index, data] of top10.entries()) {
+	let position = 1
+
+	for (const data of top10) {
 		let member = await discordUtil.getMember(bot, data.user)
 		if (member && member.user) {
 			embed.addFields({
-				name: `${index + 1}: ${member.user.tag}`,
+				name: `${position}: ${member.user.tag}`,
 				value: `${data.points} points`,
 			})
-		} else {
-			embed.addFields({
-				name: `${index + 1}: Unknown Member`,
-				value: `${data.points} points`,
-			})
+			position++
+		}
+		if (position > 10) {
+			break
 		}
 	}
 	return message.channel.send({ embed })
