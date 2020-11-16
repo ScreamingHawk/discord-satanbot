@@ -13,7 +13,7 @@ const timeouts = {}
 
 let deadServerBonus = false
 const DEAD_SERVER_MINUTES = 45
-const DEAD_SERVER_PMINS_PER_POINT = 2
+const DEAD_SERVER_PMINS_PER_POINT = 3
 let lastMessageTimestamp = moment()
 
 let ignoreChannels = []
@@ -48,11 +48,12 @@ const toggleIgnoreChannel = message => {
 const getBonusPoints = (message, last = lastMessageTimestamp) => {
 	if (deadServerBonus) {
 		const now = moment()
-		const deadServerMins = now.diff(last, 'minutes') - DEAD_SERVER_MINUTES
+		const deadServerMins = now.diff(last, 'minutes')
 		lastMessageTimestamp = now
-		if (deadServerMins > 0) {
-			const extraPoints =
-				Math.floor(deadServerMins / DEAD_SERVER_PMINS_PER_POINT) + 1
+		if (deadServerMins - DEAD_SERVER_MINUTES > 0) {
+			const extraPoints = Math.ceil(
+				deadServerMins / DEAD_SERVER_PMINS_PER_POINT,
+			)
 			message.reply(
 				`you earned an extra ${extraPoints} points for reviving the server! (Inactive for ${deadServerMins} minutes)`,
 			)
@@ -75,7 +76,7 @@ const incrementPoints = message => {
 	if (!timeout || ts.diff(timeout.last, 'seconds') > POINTS_TIMEOUT_SECONDS) {
 		// Award points
 		const score = database.getScore(author.id)
-		score.points += random.int(1, 3) + getBonusPoints(message)
+		score.points += random.int(1, 5) + getBonusPoints(message)
 		database.setScore(score)
 		roles.updateScoreRoles(message, score)
 		log.debug(`User ${author.username} has ${score.points} points`)

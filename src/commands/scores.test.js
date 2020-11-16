@@ -22,17 +22,14 @@ test('gets correct bonus point amount', t => {
 	t.is(0, bonus(moment())) // Immediate
 	t.is(0, bonus(lessMins(1))) // 1 minute
 	t.is(0, bonus(lessMins(scores.DEAD_SERVER_MINUTES))) // Boundary
-	t.is(1, bonus(lessMins(scores.DEAD_SERVER_MINUTES + 1))) // 1 point
 	t.is(
-		2,
-		bonus(
-			lessMins(
-				scores.DEAD_SERVER_MINUTES + scores.DEAD_SERVER_PMINS_PER_POINT + 1,
-			),
+		Math.ceil(
+			(scores.DEAD_SERVER_MINUTES + 1) / scores.DEAD_SERVER_PMINS_PER_POINT,
 		),
-	) // 2 points
-	t.is(8, bonus(moment().subtract(1, 'hours'))) // 1 hour
-	t.is(38, bonus(moment().subtract(2, 'hours'))) // 2 hours
+		bonus(lessMins(scores.DEAD_SERVER_MINUTES + 1)),
+	) // Boundary above
+	t.is(20, bonus(moment().subtract(1, 'hours'))) // 1 hour
+	t.is(40, bonus(moment().subtract(2, 'hours'))) // 2 hours
 })
 
 test('skips points earning on ignored channels', t => {
