@@ -24,7 +24,7 @@ test('gets correct bonus point amount', t => {
 	t.is(0, bonus(lessMins(scores.DEAD_SERVER_MINUTES))) // Boundary
 	t.is(
 		Math.ceil(
-			(scores.DEAD_SERVER_MINUTES + 1) / scores.DEAD_SERVER_PMINS_PER_POINT,
+			(scores.DEAD_SERVER_MINUTES + 1) / scores.DEAD_SERVER_MINS_PER_POINT,
 		),
 		bonus(lessMins(scores.DEAD_SERVER_MINUTES + 1)),
 	) // Boundary above

@@ -8,12 +8,12 @@ const discordUtil = require('../util/discord')
 
 // Adapted from https://anidiots.guide/coding-guides/sqlite-based-points-system
 
-const POINTS_TIMEOUT_SECONDS = 2 * 60
+const POINTS_TIMEOUT_MINUTES = 2
 const timeouts = {}
 
 let deadServerBonus = false
 const DEAD_SERVER_MINUTES = 45
-const DEAD_SERVER_PMINS_PER_POINT = 3
+const DEAD_SERVER_MINS_PER_POINT = 3
 let lastMessageTimestamp = moment()
 
 let ignoreChannels = []
@@ -51,9 +51,7 @@ const getBonusPoints = (message, last = lastMessageTimestamp) => {
 		const deadServerMins = now.diff(last, 'minutes')
 		lastMessageTimestamp = now
 		if (deadServerMins - DEAD_SERVER_MINUTES > 0) {
-			const extraPoints = Math.ceil(
-				deadServerMins / DEAD_SERVER_PMINS_PER_POINT,
-			)
+			const extraPoints = Math.ceil(deadServerMins / DEAD_SERVER_MINS_PER_POINT)
 			message.reply(
 				`you earned an extra ${extraPoints} points for reviving the server! (Inactive for ${deadServerMins} minutes)`,
 			)
@@ -73,7 +71,10 @@ const incrementPoints = message => {
 	// Check user timeout expired
 	const timeout = timeouts[author.id]
 	const ts = moment(message.createdAt)
-	if (!timeout || ts.diff(timeout.last, 'seconds') > POINTS_TIMEOUT_SECONDS) {
+	if (
+		!timeout ||
+		ts.diff(timeout.last, 'seconds') > POINTS_TIMEOUT_MINUTES * 60
+	) {
 		// Award points
 		const score = database.getScore(author.id)
 		score.points += random.int(1, 5) + getBonusPoints(message)
@@ -166,6 +167,7 @@ module.exports = {
 	showLeaderboard,
 	getBonusPoints,
 	toggleIgnoreChannel,
+	POINTS_TIMEOUT_MINUTES,
 	DEAD_SERVER_MINUTES,
-	DEAD_SERVER_PMINS_PER_POINT,
+	DEAD_SERVER_MINS_PER_POINT,
 }

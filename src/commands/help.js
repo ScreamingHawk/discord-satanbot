@@ -1,5 +1,6 @@
 const Discord = require('discord.js')
 const discordUtil = require('./../util/discord')
+const scores = require('./scores')
 
 let bot, prefix, HELP_DETAILS
 
@@ -14,8 +15,8 @@ const initHelp = (botArg, prefixArg) => {
 			detailed: [
 				`\`${prefix}score\``,
 				'Display your current points.',
-				'You gain 1-5 points each time you post, with a 2 minute cooldown.',
-				'Bonus points are earned if you post after the server has had a period of inactivity.',
+				`You gain 1-5 points each time you post, with a ${scores.POINTS_TIMEOUT_MINUTES} minute cooldown.`,
+				`Bonus points are earned (1 for every ${scores.DEAD_SERVER_MINS_PER_POINT} mins) if you post after the server has had ${scores.DEAD_SERVER_MINUTES} minutes of inactivity.`,
 				'Earning points will grant you higher roles and more powers.',
 				'When you earn enough points you can `prestige` and gain a vanity role.',
 			].join('\n'),
