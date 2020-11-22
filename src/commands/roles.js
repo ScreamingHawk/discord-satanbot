@@ -1,4 +1,5 @@
-const discord = require('../util/discord')
+const Discord = require('discord.js')
+const discordUtil = require('./../util/discord')
 const data = require('../db/data')
 const database = require('../db/database')
 const log = require('../util/logger')
@@ -28,7 +29,7 @@ const updateScoreRoles = async (message, score) => {
 	const newRole = getScoreRole(score.points)
 	if (newRole && !member.roles.cache.get(newRole)) {
 		// Update roles
-		const newRoleName = (await discord.getGuild(bot)).roles.cache.get(newRole)
+		const newRoleName = (await discordUtil.getGuild(bot)).roles.cache.get(newRole)
 			.name
 		log.info(`${message.author.username} earned the role ${newRoleName}`)
 		message.reply(`you earned the rank "${newRoleName}"`)
@@ -40,12 +41,12 @@ const updateScoreRoles = async (message, score) => {
 
 const setRoleThreshold = async (message, args) => {
 	// Permission check
-	if (!discord.checkAdmin(message)) {
+	if (!discordUtil.checkAdmin(message)) {
 		return
 	}
 
 	// Arg check
-	const role = args[0] ? await discord.getRoleStartsWith(bot, args[0]) : null
+	const role = args[0] ? await discordUtil.getRoleStartsWith(bot, args[0]) : null
 	if (!role) {
 		return message.reply('you must include a role!')
 	}
@@ -69,10 +70,10 @@ const setRoleThreshold = async (message, args) => {
 // Self assign roles
 
 const selfAssignable = async (message, args) => {
-	if (!discord.checkAdmin(message)) {
+	if (!discordUtil.checkAdmin(message)) {
 		return
 	}
-	const role = args[0] ? await discord.getRoleStartsWith(bot, args[0]) : null
+	const role = args[0] ? await discordUtil.getRoleStartsWith(bot, args[0]) : null
 	if (!role) {
 		return message.reply('cannot find role')
 	}
@@ -99,13 +100,20 @@ const selfAssign = async (message, args) => {
 	if (!args[0]) {
 		// Show all self assignable roles
 		const roleIds = database.listSelfAssign().map(r => r.role)
-		const roles = (await discord.getGuild(bot)).roles.cache
+		const roles = (await discordUtil.getGuild(bot)).roles.cache
 			.filter(r => roleIds.indexOf(r.id) > -1)
 			.map(r => r.name)
 			.sort()
-		return message.reply(`self assignable roles:\n${roles.join('\n')}`)
+
+		const embed = new Discord.MessageEmbed()
+			.setTitle('Self Assignable Roles')
+			.setAuthor(bot.user.username, bot.user.avatarURL())
+			.setColor(0xd82929)
+		embed.setDescription('Here are all the roles you can self assign')
+		embed.addFields({ name: 'Roles', value: roles.join('\n') })
+		return message.channel.send({ embed })
 	}
-	const role = await discord.getRoleStartsWith(bot, args[0])
+	const role = await discordUtil.getRoleStartsWith(bot, args[0])
 	if (!role) {
 		return message.reply('cannot find role')
 	}
