@@ -102,6 +102,7 @@ const selfAssign = async (message, args) => {
 		const roles = (await discord.getGuild(bot)).roles.cache
 			.filter(r => roleIds.indexOf(r.id) > -1)
 			.map(r => r.name)
+			.sort()
 		return message.reply(`self assignable roles:\n${roles.join('\n')}`)
 	}
 	const role = await discord.getRoleStartsWith(bot, args[0])
