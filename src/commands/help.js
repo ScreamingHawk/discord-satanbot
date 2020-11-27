@@ -63,7 +63,7 @@ const showHelp = async (message, args) => {
 		.setColor(0xd82929)
 
 	const helpCommand = args[0]
-	const isAdmin = discordUtil.checkAdmin(message)
+	const isAdmin = discordUtil.checkAdmin(message, false)
 
 	if (helpCommand && helpCommand in HELP_DETAILS) {
 		// Show the help info for a single command

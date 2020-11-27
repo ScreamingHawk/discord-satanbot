@@ -21,9 +21,11 @@ const getMember = async (bot, userId) => {
 	return user
 }
 
-const checkAdmin = message => {
+const checkAdmin = (message, alert = true) => {
 	if (!message.member.hasPermission('ADMINISTRATOR')) {
-		message.reply('only administators can do this')
+		if (alert) {
+			message.reply('only administators can do this')
+		}
 		return false
 	}
 	return true
