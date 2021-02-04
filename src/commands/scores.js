@@ -8,7 +8,7 @@ const discordUtil = require('../util/discord')
 
 // Adapted from https://anidiots.guide/coding-guides/sqlite-based-points-system
 
-const POINTS_TIMEOUT_MINUTES = 2
+const POINTS_TIMEOUT_MINUTES = 1
 const timeouts = {}
 
 let deadServerBonus = false
@@ -77,7 +77,7 @@ const incrementPoints = message => {
 	) {
 		// Award points
 		const score = database.getScore(author.id)
-		score.points += random.int(1, 5) + getBonusPoints(message)
+		score.points += random.int(2, 5) + getBonusPoints(message)
 		database.setScore(score)
 		roles.updateScoreRoles(message, score)
 		log.debug(`User ${author.username} has ${score.points} points`)
