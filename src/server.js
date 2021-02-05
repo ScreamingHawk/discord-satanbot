@@ -69,6 +69,10 @@ bot.on('message', message => {
 	if (command === 'help') {
 		return help.showHelp(message, args)
 	}
+	if (command === 'ping') {
+		log.info('ping')
+		return message.reply('pong')
+	}
 	// Scores
 	if (command === 'threshold') {
 		return roles.setRoleThreshold(message, args)
