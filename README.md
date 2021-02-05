@@ -2,11 +2,9 @@
 
 A bot for The 7th Circle discord server
 
-## Abilities
-
-- Score system
-
 ## Usage
+
+Type `*help` in a channel this bot has access to in order to see a list of abilities
 
 ### Install
 
