@@ -41,6 +41,11 @@ const initHelp = (botArg, prefixArg) => {
 			short: 'Set up the autoroles gained through points',
 			detailed: `\`${prefix}threshold role_name 10\`\nSet the role provided to be awards at 10 points\nThis command is only available to admins`,
 		},
+		thresholds: {
+			admin: false,
+			short: 'List the autoroles gained through points',
+			detailed: `\`${prefix}thresholds\`\nLists the role provided at each point threshold\nThis command is only available to admins`,
+		},
 		// Roles
 		assign: {
 			admin: false,

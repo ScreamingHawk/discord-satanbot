@@ -23,14 +23,16 @@ const getScoreRole = points => {
 // Updates the score from the old role to the new
 const updateScoreRoles = async (message, score) => {
 	if (testUser) {
+		// Ignore this when test user mode active
 		return
-	} // Ignore this when test user mode active
+	}
 	const { member } = message
 	const newRole = getScoreRole(score.points)
 	if (newRole && !member.roles.cache.get(newRole)) {
 		// Update roles
-		const newRoleName = (await discordUtil.getGuild(bot)).roles.cache.get(newRole)
-			.name
+		const newRoleName = (await discordUtil.getGuild(bot)).roles.cache.get(
+			newRole,
+		).name
 		log.info(`${message.author.username} earned the role ${newRoleName}`)
 		message.reply(`you earned the rank "${newRoleName}"`)
 		const roleIds = data.getRoleThresholds().map(r => r.role)
@@ -46,7 +48,9 @@ const setRoleThreshold = async (message, args) => {
 	}
 
 	// Arg check
-	const role = args[0] ? await discordUtil.getRoleStartsWith(bot, args[0]) : null
+	const role = args[0]
+		? await discordUtil.getRoleStartsWith(bot, args[0])
+		: null
 	if (!role) {
 		return message.reply('you must include a role!')
 	}
@@ -67,13 +71,38 @@ const setRoleThreshold = async (message, args) => {
 	message.reply(msg)
 }
 
+const listRoleThresholds = async message => {
+	const roleCache = (await discordUtil.getGuild(bot)).roles.cache
+
+	const embed = new Discord.MessageEmbed()
+		.setTitle('Score Thresholds')
+		.setAuthor(bot.user.username, bot.user.avatarURL())
+		.setColor(0xd82929)
+
+	data
+		.getRoleThresholds()
+		.slice()
+		.reverse()
+		.forEach(t => {
+			const role = roleCache.get(t.role)
+			embed.addFields({
+				name: `${role.name}`,
+				value: `${t.threshold} points`,
+			})
+		})
+
+	message.channel.send({ embed })
+}
+
 // Self assign roles
 
 const selfAssignable = async (message, args) => {
 	if (!discordUtil.checkAdmin(message)) {
 		return
 	}
-	const role = args[0] ? await discordUtil.getRoleStartsWith(bot, args[0]) : null
+	const role = args[0]
+		? await discordUtil.getRoleStartsWith(bot, args[0])
+		: null
 	if (!role) {
 		return message.reply('cannot find role')
 	}
@@ -139,6 +168,7 @@ module.exports = {
 	getScoreRole,
 	updateScoreRoles,
 	setRoleThreshold,
+	listRoleThresholds,
 	selfAssign,
 	selfAssignable,
 }

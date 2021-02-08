@@ -79,6 +79,9 @@ bot.on('message', message => {
 	if (command === 'threshold') {
 		return roles.setRoleThreshold(message, args)
 	}
+	if (command === 'thresholds') {
+		return roles.listRoleThresholds(message)
+	}
 	if (command === 'score') {
 		return scores.displayPoints(message, args)
 	}
