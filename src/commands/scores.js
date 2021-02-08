@@ -123,7 +123,6 @@ const addPoints = (message, args) => {
 	const score = database.getScore(user.id)
 	score.points += pointsToAdd
 	database.setScore(score)
-	roles.updateScoreRoles(message, score)
 
 	const msg = `${user.tag} has received ${pointsToAdd} points and now stands at ${score.points} points.`
 	log.debug(msg)
