@@ -66,6 +66,17 @@ const initDatabase = () => {
 			.prepare('CREATE UNIQUE INDEX idx_self_assign_id ON self_assign (role);')
 			.run()
 	}
+	// Configuration table
+	table = sql
+		.prepare(
+			'SELECT count(*) FROM sqlite_master WHERE type = \'table\' AND name = \'config\';',
+		)
+		.get()
+	if (!table['count(*)']) {
+		log.info('Creating config table')
+		sql.prepare('CREATE TABLE config (key TEXT PRIMARY KEY, value TEXT);').run()
+		sql.prepare('CREATE UNIQUE INDEX idx_config_id ON config (key);').run()
+	}
 }
 
 const getScore = userId => {
@@ -137,6 +148,19 @@ const removeSelfAssign = selfAssign => {
 	sql.prepare('DELETE FROM self_assign where role = @role;').run(selfAssign)
 }
 
+const getConfig = key =>
+	sql.prepare('SELECT * FROM config WHERE key = ?').get(key)
+const setConfig = config => {
+	sql
+		.prepare(
+			'INSERT OR REPLACE INTO config (key, value) VALUES (@key, @value);',
+		)
+		.run(config)
+}
+const removeConfig = config => {
+	sql.prepare('DELETE FROM config where key = @key;').run(config)
+}
+
 module.exports = {
 	initDatabase,
 	getScore,
@@ -151,4 +175,7 @@ module.exports = {
 	isSelfAssign,
 	addSelfAssign,
 	removeSelfAssign,
+	getConfig,
+	setConfig,
+	removeConfig,
 }

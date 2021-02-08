@@ -4,6 +4,7 @@ const Discord = require('discord.js')
 const { initDatabase } = require('./db/database')
 const scores = require('./commands/scores')
 const roles = require('./commands/roles')
+const audit = require('./commands/audit')
 const help = require('./commands/help')
 
 // Get token
@@ -35,6 +36,7 @@ bot.on('ready', () => {
 	// Initialise commands
 	scores.initScores(bot, DEAD_SERVER_BONUS)
 	roles.initRoles(bot, TEST_USER)
+	audit.initAudit(bot, TEST_USER)
 	help.initHelp(bot, PREFIX)
 	log.info('Commands initialised')
 })
@@ -95,6 +97,10 @@ bot.on('message', message => {
 	}
 	if (command === 'assignable') {
 		return roles.selfAssignable(message, args)
+	}
+	// Audit
+	if (command === 'audit') {
+		return audit.setAuditLoggingChannel(message)
 	}
 })
 

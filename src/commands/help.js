@@ -52,6 +52,12 @@ const initHelp = (botArg, prefixArg) => {
 			short: 'Enable self assigning for roles',
 			detailed: `\`${prefix}assignable role_name\`\nSets the role to be self assignable using the \`${prefix}assign\` command\nRun this command again to remove self assignability`,
 		},
+		// Audit
+		audit: {
+			admin: true,
+			short: 'Enable audit logging in this channel',
+			details: `\`${prefix}audit\`\nEnables audit logging in this channel\nUse this to monitor deleted messages`,
+		},
 	}
 }
 

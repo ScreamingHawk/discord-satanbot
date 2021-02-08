@@ -9,6 +9,18 @@ const getGuild = async bot => {
 	return guild
 }
 
+const getChannel = async (bot, channelId) => {
+	const g = await getGuild(bot)
+	let chan = g.channels.cache.get(channelId)
+	if (!chan) {
+		log.debug(`Getting channel ${channelId}`)
+		chan = await g.channels
+			.fetch(channelId)
+			.catch(e => log.error(`Error getting channel: ${e}`))
+	}
+	return chan
+}
+
 const getMember = async (bot, userId) => {
 	const g = await getGuild(bot)
 	let user = g.members.cache.get(userId)
@@ -38,6 +50,7 @@ const getRoleStartsWith = async (bot, roleNameStart) =>
 
 module.exports = {
 	getGuild,
+	getChannel,
 	getMember,
 	checkAdmin,
 	getRoleStartsWith,
