@@ -21,6 +21,10 @@ const initAudit = (botArg, testUserArg) => {
 }
 
 const onDeletedMessage = async message => {
+	// Ignore bots
+	if (message.author.bot) {
+		return
+	}
 	// Ignore if running in test user mode and isn't test user
 	if (testUser && message.author.username !== testUser) {
 		return
